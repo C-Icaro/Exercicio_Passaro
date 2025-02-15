@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <!--
+    O arquivo não minificado .js é usado para desenvolvimento e para debug, pois ele é legível para seres humanos.
+    O arquivo minificado .min.js é usado para produção, pois é menor que aquele usado para desenvolvimento, e portanto vai economizar na quantidade de banda utilizada pelo servidor.
+    -->
+
+    <title>Exercício do Pássaro</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script>
+
+    // vamos escrever o código (JS + Phaser) aqui dentro!
+
+</script>
+
+<script>
+
+    var config = {//Configurações do game
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);//Configurações carregadas no game
+
+    var passarinho;
+    var estadoX = "Indo";//Variável de estado X do passaro (Indo ou Voltando)
+    var estadoY = "Subindo";//Variável de estado Y do passaro (Subindo ou Descendo)
+
+
+    function preload() {//Função de pré-carregamento
+        this.load.image('bg', 'assets/bg_space.png');
+        this.load.spritesheet('bird', 'assets/bird-purple.png', {frameWidth:75, frameHeigth:75});
+    }
+
+    function create() {//Função de criação
+        this.add.image(400, 300, 'bg').setScale(1.2);
+
+        let startY = Phaser.Math.Between(100, 400);
+        let startX = Phaser.Math.Between(100, 700);
+
+        //Os seguintes whiles fazem os calculos de "aleatoriedade" que serão utilizados na primeria posição do passaro na tela
+        while (startX % 10 !== 0) {//A posição de início X será um multipo de 10 entre (Between) o intervalo dado
+        startX = Phaser.Math.Between(120, 680);//Foi posto +20 em 100 e -20 em 700 para evitar a borda e garantir que o passaro fique na tela.
+        }   
+        while (startY % 10 !== 0) {//Foi feito o mesmo que em X
+        startY = Phaser.Math.Between(120, 380);
+        }
+        
+
+        passarinho = this.add.sprite(startX, startY, 'bird').setScale(1.3);//Adiciona o sprite do passaro
+        
+        this.anims.create({
+            key: 'fly',//Key nome da animação
+            frames: this.anims.generateFrameNumbers('bird', { start: 0, end: 7}),//Indica a quantidade de frames
+            frameRate: 10,
+            repeat: -1//-1 é repetição contínuma e 0 é sem repetição
+        });
+
+        passarinho.anims.play('fly', true);//Inicia a animação do passaro voando
+        
+
+    }
+
+
+    function update() {//Função loop
+
+
+    if(estadoX==="Indo"){
+        passarinho.x += 5;//Subtrai 5 unidades de espaço no sentido X
+        if(passarinho.x === 700){//If aninhado
+            estadoX="Voltando";}//Transforma a variável estado para Descendo caso o passaro chegue na posição y = 400
+            passarinho.setFlip(false, false); //Mantêm o sprite da direita para a esquerda.
+    }
+
+            
+    if(estadoX==="Voltando"){
+        passarinho.x -= 5;//Adiciona 5 unidades de espaço no sentido X
+
+        if(passarinho.x === 100){
+            estadoX="Indo";}//Transforma a variável estado para Subindo caso o passaro chegue na posição y = 400
+            passarinho.setFlip(true, false);//Inverte o sprite deixando-o da esquerda para a direita
+    }
+
+
+    if(estadoY==="Descendo"){
+        passarinho.y += 5;//Adiciona 5 unidades de espaço no sentido Y
+
+        if(passarinho.y === 400){
+            estadoY="Subindo";}//Transforma a variável estado para Subindo caso o passaro chegue na posição y = 400
+    }
+
+    if(estadoY==="Subindo"){
+        passarinho.y -= 5;//Subtrai 5 unidades de espaço no sentido Y
+        if(passarinho.y === 100){//If aninhado
+            estadoY="Descendo";}//Transforma a variável estado para Descendo caso o passaro chegue na posição y = 400
+    }
+
+    console.log("Passaro em X:", estadoX, "Passaro em Y:", estadoY);//Informa as variáveis de estado no console
+
+
+    }
+    
+   
+
+
+</script>
+
+</body>
+</html>
